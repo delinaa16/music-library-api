@@ -1,9 +1,8 @@
 {
   "name": "music-library-api",
   "version": "1.0.0",
-  "description": "A Node.js + Express + MongoDB backend for managing a music library",
-  "main": "server.js",
   "type": "module",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -12,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongoose": "^8.19.3"

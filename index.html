@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Music Library</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Music Library</h1>
+
+    <!-- Search -->
+    <div class="mb-4">
+      <input id="searchTitle" type="text" placeholder="Search by title" class="border p-2 rounded w-1/2">
+      <input id="searchArtist" type="text" placeholder="Search by artist" class="border p-2 rounded w-1/2">
+      <button id="searchBtn" class="bg-blue-500 text-white px-4 py-2 rounded ml-2">Search</button>
+    </div>
+
+    <!-- Add Song Form -->
+    <h2 class="text-xl font-semibold mb-2">Add a New Song</h2>
+    <form id="addSongForm" class="grid grid-cols-2 gap-2 mb-4">
+      <input type="text" id="title" placeholder="Title" class="border p-2 rounded">
+      <input type="text" id="artist" placeholder="Artist" class="border p-2 rounded">
+      <input type="text" id="album" placeholder="Album" class="border p-2 rounded">
+      <input type="text" id="genre" placeholder="Genre" class="border p-2 rounded">
+      <input type="number" id="year" placeholder="Year" class="border p-2 rounded">
+      <input type="text" id="duration" placeholder="Duration" class="border p-2 rounded">
+      <button type="submit" class="col-span-2 bg-green-500 text-white px-4 py-2 rounded">Add Song</button>
+    </form>
+
+    <!-- Songs List -->
+    <h2 class="text-xl font-semibold mb-2">Songs</h2>
+    <ul id="songsList" class="space-y-2"></ul>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/songs";
+
+    // Fetch all songs
+    async function fetchSongs(query="") {
+      const res = await fetch(`${API_URL}${query}`);
+      const songs = await res.json();
+      const list = document.getElementById("songsList");
+      list.innerHTML = "";
+      songs.forEach(song => {
+        const li = document.createElement("li");
+        li.className = "p-2 border rounded flex justify-between items-center bg-gray-50";
+        li.innerHTML = `
+          <div>
+            <strong>${song.title}</strong> by ${song.artist} (${song.year}) - ${song.genre}
+          </div>
+          <div class="space-x-2">
+            <button onclick="deleteSong('${song._id}')" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+          </div>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Add a new song
+    document.getElementById("addSongForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        title: document.getElementById("title").value,
+        artist: document.getElementById("artist").value,
+        album: document.getElementById("album").value,
+        genre: document.getElementById("genre").value,
+        year: parseInt(document.getElementById("year").value),
+        duration: document.getElementById("duration").value
+      };
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      e.target.reset();
+      fetchSongs();
+    });
+
+    // Delete a song
+    async function deleteSong(id) {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      fetchSongs();
+    }
+
+    // Search
+    document.getElementById("searchBtn").addEventListener("click", () => {
+      const title = document.getElementById("searchTitle").value;
+      const artist = document.getElementById("searchArtist").value;
+      let query = "/search?";
+      if(title) query += `title=${title}&`;
+      if(artist) query += `artist=${artist}&`;
+      fetchSongs(query);
+    });
+
+    // Initial fetch
+    fetchSongs();
+  </script>
+</body>
+</html>

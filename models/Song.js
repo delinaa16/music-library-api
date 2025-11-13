@@ -17,3 +17,6 @@ const songSchema = new mongoose.Schema({
 });
 
 //Create a model
+const Song = mongoose.model("Song",songSchema);
+
+export default Song;

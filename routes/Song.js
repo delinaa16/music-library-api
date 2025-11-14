@@ -90,14 +90,79 @@ router.get("/search", async (req, res) => {
       query.title = { $regex: title, $options: "i" };
     }
     if (artist) {
-      query.artist = { $regex: artist, $options: "i" }; // Fixed: was using title instead of artist
+      query.artist = { $regex: artist, $options: "i" };
     }
 
-    const songs = await Song.find(query); // Fixed typo: SOng -> Song
+    const songs = await Song.find(query);
     res.json(songs);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
+// =====================
+// TOGGLE FAVORITE
+// =====================
+router.put("/:id/favorite", async (req, res) => {
+  try {
+    // 1️⃣ Find the song by ID from the URL
+    const song = await Song.findById(req.params.id);
+
+    // 2️⃣ If song not found, return 404
+    if (!song) {
+      return res.status(404).json({ message: "Song not found" });
+    }
+
+    // 3️⃣ Toggle favorite: if true → false, if false → true
+    song.isFavorite = !song.isFavorite;
+
+    // 4️⃣ Save the updated song
+    await song.save();
+
+    // 5️⃣ Send response with updated song
+    res.json({
+      message: "Favorite updated",
+      isFavorite: song.isFavorite,
+      song
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get("filter", async(req,res)=>{
+  const{genre, year} = req.query;
+
+  try{
+    query={};
+
+    if(genre){
+      query.genre = {$regex: genre, $options: "i"};
+    }
+    if(year){
+      query.year = Number(year);
+    }
+    const song = await Song.find(query);
+
+    res.json(song);
+  } catch(err){
+    res.status(500).json({message: err.message});
+  }
+});
+
+// =====================
+// SORT songs by field
+// Example: GET /songs/sort?field=title&order=asc
+// =====================
+router.get("/sort", async(req,res)=>{
+  const {field, order}=req.body;
+  let sortOption={}
+
+  if (field){
+    sortOption[field]= order === "desc"? -1:1;
+    }
+})
+
 
 export default router;

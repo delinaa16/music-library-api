@@ -1,22 +1,42 @@
 import mongoose from "mongoose";
 
-//define schema
+//define a schema;
+
 const songSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
-    artist: {
-        type: String,
-        required: true
-    },
+    title:{
+           type:String,
+           required:true
+        },
+    artist:{
+           type:String,
+           required:true
+        },
     album: String,
     genre: String,
     year: Number,
-    duration: String
+    duration: String,
+
+    // NEW FIELD: favorite system
+
+    isFavorite:{
+        type: Booelan,
+        default: false
+    }
 });
+//create a model
+export default mongoose.model("Song",songSchema);
 
-//Create a model
-const Song = mongoose.model("Song",songSchema);
 
-export default Song;
+
+
+
+
+
+
+
+
+
+
+
+
+

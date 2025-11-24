@@ -19,7 +19,7 @@ const songSchema = new mongoose.Schema({
     // NEW FIELD: favorite system
 
     isFavorite:{
-        type: Booelan,
+        type: Boolean,
         default: false
     }
 });
